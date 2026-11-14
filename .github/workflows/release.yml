@@ -1,0 +1,100 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Published release tag to build, for example v1.0.0
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    name: Publish ${{ matrix.arch }}
+    runs-on: windows-latest
+    env:
+      RELEASE_TAG: ${{ github.event.release.tag_name || inputs.release_tag }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x64
+            platform: x64
+            rid: win-x64
+          - arch: arm64
+            platform: ARM64
+            rid: win-arm64
+
+    steps:
+      - name: Validate release tag
+        shell: pwsh
+        run: |
+          if ($env:RELEASE_TAG -notmatch '^v\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$') {
+            throw "Release tag '$env:RELEASE_TAG' must be a version such as v1.2.3."
+          }
+
+      - name: Check out source
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 11.0.x
+
+      - name: Publish ${{ matrix.arch }}
+        run: >-
+          dotnet publish .\AutoClicker\AutoClicker.csproj
+          --configuration Release
+          --runtime ${{ matrix.rid }}
+          --self-contained true
+          --output artifacts\publish-${{ matrix.arch }}
+          -p:Platform=${{ matrix.platform }}
+
+      - name: Create release archive
+        shell: pwsh
+        env:
+          ARCH: ${{ matrix.arch }}
+        run: |
+          $archive = "AutoClicker-$env:RELEASE_TAG-win-$env:ARCH.zip"
+          Compress-Archive -Path "artifacts\publish-$env:ARCH\*" -DestinationPath $archive
+
+      - name: Upload release archive
+        uses: actions/upload-artifact@v7
+        with:
+          name: AutoClicker-${{ matrix.arch }}
+          path: AutoClicker-${{ env.RELEASE_TAG }}-win-${{ matrix.arch }}.zip
+          if-no-files-found: error
+
+  release:
+    name: Attach archives to release
+    needs: publish
+    runs-on: windows-latest
+    env:
+      RELEASE_TAG: ${{ github.event.release.tag_name || inputs.release_tag }}
+    permissions:
+      contents: write
+    steps:
+      - name: Download release archives
+        uses: actions/download-artifact@v8
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Attach archives to GitHub release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          Get-ChildItem -Path artifacts -Filter *.zip | ForEach-Object {
+            gh release upload $env:RELEASE_TAG $_.FullName --repo $env:GITHUB_REPOSITORY --clobber
+            if ($LASTEXITCODE -ne 0) {
+              exit $LASTEXITCODE
+            }
+          }
