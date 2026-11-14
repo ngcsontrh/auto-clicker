@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="AutoClicker.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:AutoClicker"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <!-- Main layout: timing controls above click options and repeat settings. -->
+    <Grid RowSpacing="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Click interval: configure the delay between clicks and optional random variation. -->
+        <Grid 
+            Grid.Row="0" 
+            Margin="16,10,16,0">
+            <Border
+                Padding="16,20,16,16"
+                BorderBrush="DarkGray"
+                BorderThickness="1"
+                CornerRadius="4">
+                <StackPanel Spacing="12">
+                    <StackPanel Orientation="Horizontal" Spacing="20">
+                        <StackPanel
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal"
+                            Spacing="12">
+                            <NumberBox
+                                Width="65"
+                                HorizontalAlignment="Right"
+                                Value="{x:Bind ViewModel.IntervalHours, Mode=TwoWay}" />
+
+                            <TextBlock VerticalAlignment="Center" Text="Hours" />
+                        </StackPanel>
+
+                        <StackPanel
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal"
+                            Spacing="12">
+                            <NumberBox
+                                Width="65"
+                                HorizontalAlignment="Right"
+                                Value="{x:Bind ViewModel.IntervalMinutes, Mode=TwoWay}" />
+
+                            <TextBlock VerticalAlignment="Center" Text="Mins" />
+                        </StackPanel>
+
+                        <StackPanel
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal"
+                            Spacing="12">
+                            <NumberBox
+                                Width="65"
+                                HorizontalAlignment="Right"
+                                Value="{x:Bind ViewModel.IntervalSeconds, Mode=TwoWay}" />
+
+                            <TextBlock VerticalAlignment="Center" Text="Secs" />
+                        </StackPanel>
+
+                        <StackPanel
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal"
+                            Spacing="12">
+                            <NumberBox
+                                Width="65"
+                                HorizontalAlignment="Right"
+                                Value="{x:Bind ViewModel.IntervalMilliseconds, Mode=TwoWay}" />
+                            <TextBlock VerticalAlignment="Center" Text="Miliseconds" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Spacing="20">
+                        <StackPanel
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal"
+                            Spacing="12">
+                            <CheckBox
+                                VerticalAlignment="Center"
+                                Content="Random offset"
+                                IsChecked="{x:Bind ViewModel.IsRandomOffsetEnabled, Mode=TwoWay}" />
+                            <NumberBox
+                                Width="65"
+                                VerticalAlignment="Center"
+                                Value="{x:Bind ViewModel.RandomOffsetMilliseconds, Mode=TwoWay}" />
+
+                            <TextBlock VerticalAlignment="Center" Text="Miliseconds" />
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+            <Border
+                Margin="24,-10,0,0"
+                Padding="4,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+                <TextBlock FontSize="12" Text="Click interval" />
+            </Border>
+        </Grid>
+
+        <!-- Click behavior: choose the mouse action and how many times it repeats. -->
+        <Grid
+            Grid.Row="1"
+            Margin="16,10,16,0"
+            ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Click options: select the mouse button and single or double click. -->
+            <Grid Grid.Column="0">
+                <Border
+                    Padding="16,20,16,16"
+                    BorderBrush="DarkGray"
+                    BorderThickness="1"
+                    CornerRadius="4">
+                    <Grid ColumnSpacing="12" RowSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock
+                            Grid.Row="0"
+                            VerticalAlignment="Center"
+                            Text="Mouse button:" />
+                        <ComboBox
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Width="96"
+                            SelectedIndex="{x:Bind ViewModel.MouseButtonIndex, Mode=TwoWay}">
+                            <ComboBoxItem Content="Left" />
+                            <ComboBoxItem Content="Right" />
+                            <ComboBoxItem Content="Middle" />
+                        </ComboBox>
+                        <TextBlock
+                            Grid.Row="1"
+                            VerticalAlignment="Center"
+                            Text="Click type:" />
+                        <ComboBox
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Width="96"
+                            SelectedIndex="{x:Bind ViewModel.ClickTypeIndex, Mode=TwoWay}">
+                            <ComboBoxItem Content="Single" />
+                            <ComboBoxItem Content="Double" />
+                        </ComboBox>
+                    </Grid>
+                </Border>
+                <Border
+                    Margin="24,-10,0,0"
+                    Padding="4,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+                    <TextBlock FontSize="12" Text="Click options" />
+                </Border>
+            </Grid>
+
+            <!-- Click repeat: repeat a fixed number of times or until stopped. -->
+            <Grid Grid.Column="1">
+                <Border
+                    Padding="16,20,16,16"
+                    BorderBrush="DarkGray"
+                    BorderThickness="1"
+                    CornerRadius="4">
+                    <StackPanel Spacing="8">
+                        <StackPanel
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal"
+                            Spacing="12">
+                            <RadioButton
+                                Content="Repeat"
+                                GroupName="RepeatMode"
+                                IsChecked="{x:Bind ViewModel.IsFixedRepeat, Mode=TwoWay}" />
+                            <NumberBox
+                                Width="96"
+                                Minimum="1"
+                                SpinButtonPlacementMode="Inline"
+                                Value="{x:Bind ViewModel.RepeatCount, Mode=TwoWay}" />
+                            <TextBlock VerticalAlignment="Center" Text="times" />
+                        </StackPanel>
+                        <RadioButton
+                            Content="Repeat until stopped"
+                            GroupName="RepeatMode"
+                            IsChecked="{x:Bind ViewModel.RepeatUntilStopped, Mode=TwoWay}" />
+                    </StackPanel>
+                </Border>
+                <Border
+                    Margin="24,-10,0,0"
+                    Padding="4,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+                    <TextBlock FontSize="12" Text="Click repeat" />
+                </Border>
+            </Grid>
+        </Grid>
+
+        <Grid
+            Grid.Row="2"
+            Margin="16,10,16,0">
+            <Border
+                Padding="16,20,16,16"
+                BorderBrush="DarkGray"
+                BorderThickness="1"
+                CornerRadius="4">
+                <Grid
+                    VerticalAlignment="Center"
+                    ColumnSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <RadioButton
+                        Grid.Column="0"
+                        Content="Current location"
+                        GroupName="CursorPosition"
+                        IsChecked="{x:Bind ViewModel.UseCurrentLocation, Mode=TwoWay}" />
+                    <RadioButton
+                        Grid.Column="2"
+                        AutomationProperties.Name="Use selected location"
+                        HorizontalAlignment="Left"
+                        MinWidth="0"
+                        Width="24"
+                        GroupName="CursorPosition"
+                        IsChecked="{x:Bind ViewModel.UseSelectedLocation, Mode=TwoWay}" />
+                    <Button
+                        Grid.Column="3"
+                        Content="{x:Bind ViewModel.PickLocationButtonText, Mode=OneWay}"
+                        IsEnabled="{x:Bind ViewModel.CanPickLocation, Mode=OneWay}"
+                        Command="{x:Bind ViewModel.PickLocationCommand}"
+                        ToolTipService.ToolTip="Move the pointer to the desired screen location and click. Press Esc to cancel." />
+                    <TextBlock
+                        Grid.Column="4"
+                        VerticalAlignment="Center"
+                        Text="X" />
+                    <NumberBox
+                        Grid.Column="5"
+                        Width="72"
+                        Value="{x:Bind ViewModel.CursorX, Mode=TwoWay}" />
+                    <TextBlock
+                        Grid.Column="6"
+                        VerticalAlignment="Center"
+                        Text="Y" />
+                    <NumberBox
+                        Grid.Column="7"
+                        Width="72"
+                        Value="{x:Bind ViewModel.CursorY, Mode=TwoWay}" />
+                </Grid>
+            </Border>
+            <Border
+                Margin="24,-10,0,0"
+                Padding="4,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+                <TextBlock FontSize="12" Text="Cursor position" />
+            </Border>
+        </Grid>
+
+        <!-- Start/stop controls and shortcuts. -->
+        <Grid
+            Grid.Row="3"
+            Margin="16,10,16,0"
+            HorizontalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Button
+                x:Name="StartButton"
+                Grid.Row="0"
+                Grid.Column="0"
+                HorizontalAlignment="Left"
+                Width="310"
+                Height="40"
+                Style="{StaticResource AccentButtonStyle}"
+                Content="{x:Bind ViewModel.StartStopText, Mode=OneWay}"
+                Command="{x:Bind ViewModel.ToggleRunningCommand}" />
+            <Button
+                Grid.Row="0"
+                Grid.Column="1"
+                HorizontalAlignment="Right"
+                Width="310"
+                Height="40"
+                Content="Hotkey setting"
+                Click="HotkeySettingButton_Click" />
+        </Grid>
+    </Grid>
+</Page>
