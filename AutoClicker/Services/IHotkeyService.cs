@@ -6,7 +6,7 @@ namespace AutoClicker.Services
     public interface IHotkeyService
     {
         /// <summary>The configured start/stop key.</summary>
-        VirtualKey Key { get; }
+        string Key { get; }
 
         /// <summary>True when <see cref="Key"/> is registered as a system-wide hotkey.</summary>
         bool IsRegistered { get; }
@@ -20,10 +20,7 @@ namespace AutoClicker.Services
         /// <summary>Hooks the window and registers the current key as a global hotkey.</summary>
         bool TryInitialize(nint windowHandle, out string error);
 
-        /// <summary>
-        /// Changes the key. If the service is listening the new key is registered first;
-        /// on failure the previous key is restored.
-        /// </summary>
-        bool TrySetKey(VirtualKey key, out string error);
+        /// <summary>Changes the key using its function-key name (F1 through F12).</summary>
+        bool TrySetKey(string key, out string error);
     }
 }

@@ -5,7 +5,6 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.Extensions.DependencyInjection;
-using Windows.System;
 using Windows.UI;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -58,7 +57,7 @@ namespace AutoClicker
             var hotkeyPicker = new ComboBox
             {
                 MinWidth = 160,
-                SelectedIndex = (int)ViewModel.HotkeyKey - (int)VirtualKey.F1
+                SelectedIndex = int.Parse(ViewModel.HotkeyKey.AsSpan(1)) - 1
             };
 
             for (var keyNumber = 1; keyNumber <= 12; keyNumber++)
@@ -79,7 +78,7 @@ namespace AutoClicker
             if (await dialog.ShowAsync() == ContentDialogResult.Primary &&
                 hotkeyPicker.SelectedIndex >= 0)
             {
-                var selectedKey = (VirtualKey)((int)VirtualKey.F1 + hotkeyPicker.SelectedIndex);
+                var selectedKey = $"F{hotkeyPicker.SelectedIndex + 1}";
                 if (!ViewModel.TrySetHotkey(selectedKey, out var error))
                 {
                     await ShowHotkeyErrorAsync(error);

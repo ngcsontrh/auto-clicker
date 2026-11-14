@@ -22,7 +22,7 @@ namespace AutoClicker.Services.Implements
             _windowSubclassProc = WindowSubclassProc;
         }
 
-        public VirtualKey Key { get; private set; } = VirtualKey.F6;
+        public string Key { get; private set; } = "F6";
 
         public bool IsRegistered => _registeredKey.HasValue;
 
@@ -36,7 +36,7 @@ namespace AutoClicker.Services.Implements
             {
                 if (!IsRegistered)
                 {
-                    return TryRegister(Key, out error);
+                    return TryRegister(ParseHotkeyKey(Key), out error);
                 }
 
                 error = string.Empty;
@@ -55,12 +55,20 @@ namespace AutoClicker.Services.Implements
             }
 
             IsListening = true;
-            return TryRegister(Key, out error);
+            return TryRegister(ParseHotkeyKey(Key), out error);
         }
 
-        public bool TrySetKey(VirtualKey key, out string error)
+        public bool TrySetKey(string key, out string error)
         {
-            if (IsListening && !TryRegister(key, out error))
+            if (key is not ("F1" or "F2" or "F3" or "F4" or "F5" or "F6" or
+                "F7" or "F8" or "F9" or "F10" or "F11" or "F12"))
+            {
+                error = "Select a valid hotkey from F1 through F12.";
+                return false;
+            }
+
+            var virtualKey = ParseHotkeyKey(key);
+            if (IsListening && !TryRegister(virtualKey, out error))
             {
                 return false;
             }
@@ -68,6 +76,12 @@ namespace AutoClicker.Services.Implements
             Key = key;
             error = string.Empty;
             return true;
+        }
+
+        private static VirtualKey ParseHotkeyKey(string key)
+        {
+            var keyNumber = int.Parse(key.AsSpan(1));
+            return (VirtualKey)((int)VirtualKey.F1 + keyNumber - 1);
         }
 
         private LRESULT WindowSubclassProc(

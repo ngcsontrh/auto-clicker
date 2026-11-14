@@ -98,9 +98,12 @@ namespace AutoClicker.ViewModels
         [ObservableProperty]
         public partial string? ErrorMessage { get; set; }
 
-        public string StartStopText => $"{(IsRunning ? "Stop" : "Start")} ({_hotkeyService.Key})";
 
-        public VirtualKey HotkeyKey => _hotkeyService.Key;
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(StartStopText))]
+        public partial string HotkeyKey { get; set; } = "F6";
+
+        public string StartStopText => $"{(IsRunning ? "Stop" : "Start")} ({HotkeyKey})";
 
         [RelayCommand]
         private void ToggleRunning()
@@ -275,14 +278,14 @@ namespace AutoClicker.ViewModels
             return _hotkeyService.TryInitialize(windowHandle, out error);
         }
 
-        public bool TrySetHotkey(VirtualKey key, out string error)
+        public bool TrySetHotkey(string key, out string error)
         {
             if (!_hotkeyService.TrySetKey(key, out error))
             {
                 return false;
             }
 
-            OnPropertyChanged(nameof(StartStopText));
+            HotkeyKey = key;
             return true;
         }
 
