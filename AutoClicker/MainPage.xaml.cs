@@ -50,6 +50,11 @@ namespace AutoClicker
             {
                 await ShowLocationPickErrorAsync(ViewModel.LocationPickErrorMessage);
             }
+            else if (e.PropertyName == nameof(MainPageViewModel.SettingsErrorMessage) &&
+                !string.IsNullOrEmpty(ViewModel.SettingsErrorMessage))
+            {
+                await ShowSettingsErrorAsync(ViewModel.SettingsErrorMessage);
+            }
         }
 
         private async void HotkeySettingButton_Click(object sender, RoutedEventArgs e)
@@ -93,6 +98,11 @@ namespace AutoClicker
                 await ShowHotkeyErrorAsync(error);
             }
 
+            if (!string.IsNullOrEmpty(ViewModel.SettingsErrorMessage))
+            {
+                await ShowSettingsErrorAsync(ViewModel.SettingsErrorMessage);
+            }
+
             StartButton.Focus(FocusState.Programmatic);
         }
 
@@ -127,6 +137,19 @@ namespace AutoClicker
             var dialog = new ContentDialog
             {
                 Title = "Location picker unavailable",
+                Content = message,
+                CloseButtonText = "OK",
+                XamlRoot = XamlRoot
+            };
+
+            await dialog.ShowAsync();
+        }
+
+        private async Task ShowSettingsErrorAsync(string message)
+        {
+            var dialog = new ContentDialog
+            {
+                Title = "Settings unavailable",
                 Content = message,
                 CloseButtonText = "OK",
                 XamlRoot = XamlRoot

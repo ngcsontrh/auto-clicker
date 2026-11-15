@@ -10,6 +10,7 @@ Auto Clicker is a Windows desktop app for automating mouse clicks. Configure the
 - Repeat a specified number of times or continue until stopped.
 - Click at the current cursor position or select a fixed screen location.
 - Start and stop clicking with a configurable global function key (F1–F12); F6 is the default.
+- Save click options, location, repeat settings, and hotkey in `%LOCALAPPDATA%\AutoClicker\Settings.json`.
 
 ## Requirements
 

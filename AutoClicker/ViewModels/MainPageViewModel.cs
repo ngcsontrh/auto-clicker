@@ -2,7 +2,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using AutoClicker.Services;
 using System.Drawing;
-using Windows.System;
 
 namespace AutoClicker.ViewModels
 {
@@ -10,8 +9,10 @@ namespace AutoClicker.ViewModels
     {
         private readonly IHotkeyService _hotkeyService;
         private readonly IMouseService _mouseService;
+        private readonly SettingsService _settingsService;
         private CancellationTokenSource? _clickCancellation;
         private CancellationTokenSource? _locationPickCancellation;
+        private bool _isLoadingSettings;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(StartStopText))]
@@ -98,6 +99,8 @@ namespace AutoClicker.ViewModels
         [ObservableProperty]
         public partial string? ErrorMessage { get; set; }
 
+        [ObservableProperty]
+        public partial string? SettingsErrorMessage { get; set; }
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(StartStopText))]
@@ -154,12 +157,116 @@ namespace AutoClicker.ViewModels
             }
         }
 
-        public MainPageViewModel(IHotkeyService hotkeyService, IMouseService mouseService)
+        public MainPageViewModel(
+            IHotkeyService hotkeyService,
+            IMouseService mouseService,
+            SettingsService settingsService)
         {
             _hotkeyService = hotkeyService;
             _mouseService = mouseService;
+            _settingsService = settingsService;
             _hotkeyService.HotkeyPressed += ToggleRunning;
+            LoadSettings();
         }
+
+        private void LoadSettings()
+        {
+            AppSettings settings;
+            try
+            {
+                settings = _settingsService.Load();
+            }
+            catch (Exception exception) when (
+                exception is IOException or UnauthorizedAccessException or
+                System.Text.Json.JsonException or InvalidDataException)
+            {
+                SettingsErrorMessage = $"Could not load settings: {exception.Message}";
+                return;
+            }
+
+            _isLoadingSettings = true;
+            try
+            {
+                IntervalHours = settings.IntervalHours;
+                IntervalMinutes = settings.IntervalMinutes;
+                IntervalSeconds = settings.IntervalSeconds;
+                IntervalMilliseconds = settings.IntervalMilliseconds;
+                IsRandomOffsetEnabled = settings.IsRandomOffsetEnabled;
+                RandomOffsetMilliseconds = settings.RandomOffsetMilliseconds;
+                MouseButtonIndex = settings.MouseButtonIndex;
+                ClickTypeIndex = settings.ClickTypeIndex;
+                RepeatCount = settings.RepeatCount;
+                RepeatUntilStopped = settings.RepeatUntilStopped;
+                UseCurrentLocation = settings.UseCurrentLocation;
+                CursorX = settings.CursorX;
+                CursorY = settings.CursorY;
+
+                if (!_hotkeyService.TrySetKey(settings.HotkeyKey, out var error))
+                {
+                    SettingsErrorMessage = $"Could not load the saved hotkey: {error}";
+                }
+                else
+                {
+                    HotkeyKey = settings.HotkeyKey;
+                }
+            }
+            finally
+            {
+                _isLoadingSettings = false;
+            }
+        }
+
+        private void SaveSettings()
+        {
+            if (_isLoadingSettings)
+            {
+                return;
+            }
+
+            var settings = new AppSettings
+            {
+                IntervalHours = IntervalHours,
+                IntervalMinutes = IntervalMinutes,
+                IntervalSeconds = IntervalSeconds,
+                IntervalMilliseconds = IntervalMilliseconds,
+                IsRandomOffsetEnabled = IsRandomOffsetEnabled,
+                RandomOffsetMilliseconds = RandomOffsetMilliseconds,
+                MouseButtonIndex = MouseButtonIndex,
+                ClickTypeIndex = ClickTypeIndex,
+                RepeatCount = RepeatCount,
+                RepeatUntilStopped = RepeatUntilStopped,
+                UseCurrentLocation = UseCurrentLocation,
+                CursorX = CursorX,
+                CursorY = CursorY,
+                HotkeyKey = HotkeyKey
+            };
+
+            try
+            {
+                _settingsService.Save(settings);
+                SettingsErrorMessage = null;
+            }
+            catch (Exception exception) when (
+                exception is IOException or UnauthorizedAccessException or InvalidDataException)
+            {
+                SettingsErrorMessage = $"Could not save settings: {exception.Message}";
+            }
+        }
+
+        partial void OnIntervalHoursChanged(double value) => SaveSettings();
+        partial void OnIntervalMinutesChanged(double value) => SaveSettings();
+        partial void OnIntervalSecondsChanged(double value) => SaveSettings();
+        partial void OnIntervalMillisecondsChanged(double value) => SaveSettings();
+        partial void OnIsRandomOffsetEnabledChanged(bool value) => SaveSettings();
+        partial void OnRandomOffsetMillisecondsChanged(double value) => SaveSettings();
+        partial void OnMouseButtonIndexChanged(int value) => SaveSettings();
+        partial void OnClickTypeIndexChanged(int value) => SaveSettings();
+        partial void OnRepeatCountChanged(double value) => SaveSettings();
+        partial void OnRepeatUntilStoppedChanged(bool value) => SaveSettings();
+        partial void OnUseCurrentLocationChanged(bool value) => SaveSettings();
+        partial void OnCursorXChanged(double value) => SaveSettings();
+        partial void OnCursorYChanged(double value) => SaveSettings();
+        partial void OnHotkeyKeyChanged(string value) => SaveSettings();
 
         partial void OnIsRunningChanged(bool value)
         {

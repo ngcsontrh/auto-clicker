@@ -52,10 +52,12 @@ namespace AutoClicker
             var services = new ServiceCollection();
             services.AddSingleton<IHotkeyService, HotkeyService>();
             services.AddSingleton<IMouseService, MouseService>();
+            services.AddSingleton<SettingsService>();
             services.AddTransient(
                 serviceProvider => new MainPageViewModel(
                     serviceProvider.GetRequiredService<IHotkeyService>(),
-                    serviceProvider.GetRequiredService<IMouseService>()));
+                    serviceProvider.GetRequiredService<IMouseService>(),
+                    serviceProvider.GetRequiredService<SettingsService>()));
             Services = services.BuildServiceProvider();
         }
 
