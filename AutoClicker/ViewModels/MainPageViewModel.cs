@@ -10,6 +10,7 @@ namespace AutoClicker.ViewModels
         private readonly IHotkeyService _hotkeyService;
         private readonly IMouseService _mouseService;
         private readonly SettingsService _settingsService;
+        private readonly IThemeService _themeService;
         private CancellationTokenSource? _clickCancellation;
         private CancellationTokenSource? _locationPickCancellation;
         private bool _isLoadingSettings;
@@ -68,15 +69,12 @@ namespace AutoClicker.ViewModels
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(CanPickLocation))]
-        [NotifyPropertyChangedFor(nameof(PickLocationButtonText))]
         public partial bool IsPickingLocation { get; set; }
 
         [ObservableProperty]
         public partial string? LocationPickErrorMessage { get; set; }
 
         public bool CanPickLocation => !IsRunning && !IsPickingLocation;
-
-        public string PickLocationButtonText => IsPickingLocation ? "Picking..." : "Pick location";
 
         public bool UseSelectedLocation
         {
@@ -105,6 +103,9 @@ namespace AutoClicker.ViewModels
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(StartStopText))]
         public partial string HotkeyKey { get; set; } = "F6";
+
+        [ObservableProperty]
+        public partial string ThemeMode { get; set; } = "System";
 
         public string StartStopText => $"{(IsRunning ? "Stop" : "Start")} ({HotkeyKey})";
 
@@ -160,13 +161,21 @@ namespace AutoClicker.ViewModels
         public MainPageViewModel(
             IHotkeyService hotkeyService,
             IMouseService mouseService,
-            SettingsService settingsService)
+            SettingsService settingsService,
+            IThemeService themeService)
         {
             _hotkeyService = hotkeyService;
             _mouseService = mouseService;
             _settingsService = settingsService;
+            _themeService = themeService;
+            _themeService.ThemeChanged += ThemeService_ThemeChanged;
             _hotkeyService.HotkeyPressed += ToggleRunning;
             LoadSettings();
+        }
+
+        private void ThemeService_ThemeChanged(object? sender, EventArgs e)
+        {
+            ThemeMode = _themeService.ThemeMode;
         }
 
         private void LoadSettings()
@@ -200,6 +209,7 @@ namespace AutoClicker.ViewModels
                 UseCurrentLocation = settings.UseCurrentLocation;
                 CursorX = settings.CursorX;
                 CursorY = settings.CursorY;
+                ThemeMode = settings.ThemeMode;
 
                 if (!_hotkeyService.TrySetKey(settings.HotkeyKey, out var error))
                 {
@@ -238,7 +248,8 @@ namespace AutoClicker.ViewModels
                 UseCurrentLocation = UseCurrentLocation,
                 CursorX = CursorX,
                 CursorY = CursorY,
-                HotkeyKey = HotkeyKey
+                HotkeyKey = HotkeyKey,
+                ThemeMode = ThemeMode
             };
 
             try
@@ -267,6 +278,11 @@ namespace AutoClicker.ViewModels
         partial void OnCursorXChanged(double value) => SaveSettings();
         partial void OnCursorYChanged(double value) => SaveSettings();
         partial void OnHotkeyKeyChanged(string value) => SaveSettings();
+        partial void OnThemeModeChanged(string value)
+        {
+            _themeService.SetThemeMode(value);
+            SaveSettings();
+        }
 
         partial void OnIsRunningChanged(bool value)
         {

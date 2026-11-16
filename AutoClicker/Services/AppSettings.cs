@@ -16,6 +16,7 @@ namespace AutoClicker.Services
         public double CursorX { get; set; }
         public double CursorY { get; set; }
         public string HotkeyKey { get; set; } = "F6";
+        public string ThemeMode { get; set; } = "System";
 
         public bool IsValid =>
             double.IsFinite(IntervalHours) && IntervalHours >= 0 &&
@@ -27,10 +28,14 @@ namespace AutoClicker.Services
             ClickTypeIndex is >= 0 and <= 1 &&
             double.IsFinite(RepeatCount) && RepeatCount >= 1 &&
             double.IsFinite(CursorX) && double.IsFinite(CursorY) &&
-            IsValidHotkeyKey(HotkeyKey);
+            IsValidHotkeyKey(HotkeyKey) &&
+            IsValidThemeMode(ThemeMode);
 
         public static bool IsValidHotkeyKey(string? key) =>
             key is "F1" or "F2" or "F3" or "F4" or "F5" or "F6" or
                 "F7" or "F8" or "F9" or "F10" or "F11" or "F12";
+
+        public static bool IsValidThemeMode(string? mode) =>
+            mode is "System" or "Light" or "Dark";
     }
 }

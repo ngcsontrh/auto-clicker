@@ -12,7 +12,9 @@
         <MicaBackdrop />
     </Window.SystemBackdrop>
 
-    <Grid>
+    <Grid
+        x:Name="WindowRoot"
+        Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <!--
             The Frame hosts pages for your application content. Add your UI to
             MainPage.xaml rather than here so you can use Page features such as

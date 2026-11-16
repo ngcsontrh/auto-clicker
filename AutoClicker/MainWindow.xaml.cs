@@ -1,3 +1,5 @@
+using AutoClicker.Services;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 
@@ -13,25 +15,40 @@ namespace AutoClicker
     /// </summary>
     public sealed partial class MainWindow : Window
     {
+        private readonly IThemeService _themeService;
+
         public MainWindow()
         {
             InitializeComponent();
+            _themeService = App.Services.GetRequiredService<IThemeService>();
+            _themeService.ThemeChanged += ThemeService_ThemeChanged;
+            ApplyTheme();
 
             ExtendsContentIntoTitleBar = false;
 
             AppWindow.SetIcon("Assets/AppIcon.ico");
 
-            AppWindow.Resize(new Windows.Graphics.SizeInt32(850, 575));
-            if (AppWindow.Presenter is OverlappedPresenter presenter)
-            {
-                presenter.IsResizable = false;
-                presenter.IsMaximizable = false;
-            }
+            AppWindow.Resize(new Windows.Graphics.SizeInt32(780, 500));
 
             CenterWindow();
 
             // Navigate the root frame to the main page on startup.
             RootFrame.Navigate(typeof(MainPage));
+        }
+
+        private void ThemeService_ThemeChanged(object? sender, EventArgs e)
+        {
+            ApplyTheme();
+        }
+
+        private void ApplyTheme()
+        {
+            WindowRoot.RequestedTheme = _themeService.ThemeMode switch
+            {
+                "Light" => ElementTheme.Light,
+                "Dark" => ElementTheme.Dark,
+                _ => ElementTheme.Default
+            };
         }
 
         private void CenterWindow()

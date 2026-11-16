@@ -211,100 +211,169 @@
 
         <Grid
             Grid.Row="2"
-            Margin="16,10,16,0">
-            <Border
-                Padding="16,20,16,16"
-                BorderBrush="DarkGray"
-                BorderThickness="1"
-                CornerRadius="4">
-                <Grid
-                    VerticalAlignment="Center"
-                    ColumnSpacing="12">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <RadioButton
-                        Grid.Column="0"
-                        Content="Current location"
-                        GroupName="CursorPosition"
-                        IsChecked="{x:Bind ViewModel.UseCurrentLocation, Mode=TwoWay}" />
-                    <RadioButton
-                        Grid.Column="2"
-                        AutomationProperties.Name="Use selected location"
-                        HorizontalAlignment="Left"
-                        MinWidth="0"
-                        Width="24"
-                        GroupName="CursorPosition"
-                        IsChecked="{x:Bind ViewModel.UseSelectedLocation, Mode=TwoWay}" />
-                    <Button
-                        Grid.Column="3"
-                        Content="{x:Bind ViewModel.PickLocationButtonText, Mode=OneWay}"
-                        IsEnabled="{x:Bind ViewModel.CanPickLocation, Mode=OneWay}"
-                        Command="{x:Bind ViewModel.PickLocationCommand}"
-                        ToolTipService.ToolTip="Move the pointer to the desired screen location and click. Press Esc to cancel." />
-                    <TextBlock
-                        Grid.Column="4"
-                        VerticalAlignment="Center"
-                        Text="X" />
-                    <NumberBox
-                        Grid.Column="5"
-                        Width="72"
-                        Value="{x:Bind ViewModel.CursorX, Mode=TwoWay}" />
-                    <TextBlock
-                        Grid.Column="6"
-                        VerticalAlignment="Center"
-                        Text="Y" />
-                    <NumberBox
-                        Grid.Column="7"
-                        Width="72"
-                        Value="{x:Bind ViewModel.CursorY, Mode=TwoWay}" />
-                </Grid>
-            </Border>
-            <Border
-                Margin="24,-10,0,0"
-                Padding="4,0"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-                <TextBlock FontSize="12" Text="Cursor position" />
-            </Border>
-        </Grid>
-
-        <!-- Start/stop controls and shortcuts. -->
-        <Grid
-            Grid.Row="3"
             Margin="16,10,16,0"
-            HorizontalAlignment="Stretch">
+            ColumnSpacing="12">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
+            <Grid Grid.Column="0">
+                <Border
+                    Padding="16,20,16,16"
+                    BorderBrush="DarkGray"
+                    BorderThickness="1"
+                    CornerRadius="4">
+                    <Grid
+                        VerticalAlignment="Center"
+                        ColumnSpacing="8"
+                        RowSpacing="8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <RadioButton
+                            Grid.Row="0"
+                            Grid.ColumnSpan="6"
+                            Content="Current position"
+                            GroupName="CursorPosition"
+                            IsChecked="{x:Bind ViewModel.UseCurrentLocation, Mode=TwoWay}" />
+                        <RadioButton
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Content="Pick location"
+                            GroupName="CursorPosition"
+                            IsChecked="{x:Bind ViewModel.UseSelectedLocation, Mode=TwoWay}" />
+                        <Button
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Width="32"
+                            Height="32"
+                            HorizontalAlignment="Left"
+                            Padding="0"
+                            Margin="-15,0,30,0"
+                            AutomationProperties.Name="Pick location"
+                            IsEnabled="{x:Bind ViewModel.CanPickLocation, Mode=OneWay}"
+                            Command="{x:Bind ViewModel.PickLocationCommand}"
+                            ToolTipService.ToolTip="Move the pointer to the desired screen location and click. Press Esc to cancel.">
+                            <Canvas Width="18" Height="24">
+                                <Path
+                                    Data="M9,1 C4.6,1 1,4.6 1,9 V15 C1,19.4 4.6,23 9,23 C13.4,23 17,19.4 17,15 V9 C17,4.6 13.4,1 9,1 Z M9,1 V8"
+                                    Fill="Transparent"
+                                    Stroke="{ThemeResource TextFillColorPrimaryBrush}"
+                                    StrokeThickness="1.5" />
+                            </Canvas>
+                        </Button>
+                        <TextBlock
+                            Grid.Row="1"
+                            Grid.Column="2"
+                            VerticalAlignment="Center"
+                            Text="X" />
+                        <NumberBox
+                            Grid.Row="1"
+                            Grid.Column="3"
+                            Width="50"
+                            Value="{x:Bind ViewModel.CursorX, Mode=TwoWay}" />
+                        <TextBlock
+                            Grid.Row="1"
+                            Grid.Column="4"
+                            VerticalAlignment="Center"
+                            Text="Y" />
+                        <NumberBox
+                            Grid.Row="1"
+                            Grid.Column="5"
+                            Width="50"
+                            Value="{x:Bind ViewModel.CursorY, Mode=TwoWay}" />
+                    </Grid>
+                </Border>
+                <Border
+                    Margin="24,-10,0,0"
+                    Padding="4,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+                    <TextBlock FontSize="12" Text="Cursor position" />
+                </Border>
+            </Grid>
+
+            <Grid Grid.Column="1">
+                <Border
+                    Padding="16,20,16,16"
+                    BorderBrush="DarkGray"
+                    BorderThickness="1"
+                    CornerRadius="4">
+                    <Grid
+                        VerticalAlignment="Center"
+                        ColumnSpacing="12"
+                        RowSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock
+                            Grid.Row="0"
+                            VerticalAlignment="Center"
+                            Text="Hotkey setting:" />
+                        <Button
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Width="96"
+                            HorizontalAlignment="Left"
+                            HorizontalContentAlignment="Left"
+                            Content="{x:Bind ViewModel.HotkeyKey, Mode=OneWay}"
+                            Click="HotkeySettingButton_Click" />
+                        <TextBlock
+                            Grid.Row="1"
+                            VerticalAlignment="Center"
+                            Text="Theme:" />
+                        <ComboBox
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Width="96"
+                            HorizontalAlignment="Left"
+                            SelectedValuePath="Content"
+                            SelectedValue="{x:Bind ViewModel.ThemeMode, Mode=TwoWay}">
+                            <ComboBoxItem Content="System" />
+                            <ComboBoxItem Content="Light" />
+                            <ComboBoxItem Content="Dark" />
+                        </ComboBox>
+                    </Grid>
+                </Border>
+                <Border
+                    Margin="24,-10,0,0"
+                    Padding="4,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+                    <TextBlock FontSize="12" Text="Settings" />
+                </Border>
+            </Grid>
+        </Grid>
+
+        <!-- Start/stop control. -->
+        <Grid
+            Grid.Row="3"
+            Margin="16,10,16,0"
+            HorizontalAlignment="Stretch">
             <Button
                 x:Name="StartButton"
-                Grid.Row="0"
-                Grid.Column="0"
-                HorizontalAlignment="Left"
-                Width="310"
+                HorizontalAlignment="Stretch"
                 Height="40"
                 Style="{StaticResource AccentButtonStyle}"
                 Content="{x:Bind ViewModel.StartStopText, Mode=OneWay}"
                 Command="{x:Bind ViewModel.ToggleRunningCommand}" />
-            <Button
-                Grid.Row="0"
-                Grid.Column="1"
-                HorizontalAlignment="Right"
-                Width="310"
-                Height="40"
-                Content="Hotkey setting"
-                Click="HotkeySettingButton_Click" />
         </Grid>
     </Grid>
 </Page>
