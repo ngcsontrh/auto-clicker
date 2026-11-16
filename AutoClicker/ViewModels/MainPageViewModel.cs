@@ -105,7 +105,26 @@ namespace AutoClicker.ViewModels
         public partial string HotkeyKey { get; set; } = "F6";
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(ThemeModeIndex))]
         public partial string ThemeMode { get; set; } = "System";
+
+        public int ThemeModeIndex
+        {
+            get => ThemeMode switch
+            {
+                "System" => 0,
+                "Light" => 1,
+                "Dark" => 2,
+                _ => -1
+            };
+            set => ThemeMode = value switch
+            {
+                0 => "System",
+                1 => "Light",
+                2 => "Dark",
+                _ => throw new ArgumentOutOfRangeException(nameof(value), value, "Select a valid theme mode.")
+            };
+        }
 
         public string StartStopText => $"{(IsRunning ? "Stop" : "Start")} ({HotkeyKey})";
 

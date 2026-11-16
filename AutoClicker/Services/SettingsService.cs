@@ -1,14 +1,10 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace AutoClicker.Services
 {
     public sealed class SettingsService
     {
-        private static readonly JsonSerializerOptions SerializerOptions = new()
-        {
-            WriteIndented = true
-        };
-
         private readonly string _settingsPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "AutoClicker",
@@ -22,7 +18,7 @@ namespace AutoClicker.Services
             }
 
             var json = File.ReadAllText(_settingsPath);
-            var settings = JsonSerializer.Deserialize<AppSettings>(json)
+            var settings = JsonSerializer.Deserialize(json, SettingsJsonContext.Default.AppSettings)
                 ?? throw new InvalidDataException("The settings file is empty.");
 
             if (!settings.IsValid)
@@ -44,8 +40,14 @@ namespace AutoClicker.Services
                 ?? throw new InvalidOperationException("The settings file path has no parent directory.");
             Directory.CreateDirectory(directory);
 
-            var json = JsonSerializer.Serialize(settings, SerializerOptions);
+            var json = JsonSerializer.Serialize(settings, SettingsJsonContext.Default.AppSettings);
             File.WriteAllText(_settingsPath, json);
         }
+    }
+
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(AppSettings))]
+    internal partial class SettingsJsonContext : JsonSerializerContext
+    {
     }
 }

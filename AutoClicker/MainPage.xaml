@@ -343,8 +343,7 @@
                             Grid.Column="1"
                             Width="96"
                             HorizontalAlignment="Left"
-                            SelectedValuePath="Content"
-                            SelectedValue="{x:Bind ViewModel.ThemeMode, Mode=TwoWay}">
+                            SelectedIndex="{x:Bind ViewModel.ThemeModeIndex, Mode=TwoWay}">
                             <ComboBoxItem Content="System" />
                             <ComboBoxItem Content="Light" />
                             <ComboBoxItem Content="Dark" />
