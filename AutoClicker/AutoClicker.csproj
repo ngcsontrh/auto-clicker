@@ -19,6 +19,10 @@
     <OptimizationPreference>Size</OptimizationPreference>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <WindowsPackageType>None</WindowsPackageType>
+  </PropertyGroup>
+
   <ItemGroup>
     <Content Include="Assets\SplashScreen.scale-200.png" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
